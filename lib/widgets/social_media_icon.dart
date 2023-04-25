@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../start.dart';
 
 // ignore: must_be_immutable
 class SocialMediaIcon extends StatelessWidget {
@@ -22,8 +23,13 @@ class SocialMediaIcon extends StatelessWidget {
           radius: 40,
         ),
         onTap: () {
-          launchUrl(Uri.parse(socialMedialink),
-              mode: LaunchMode.externalApplication);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StartSocialMedia(socialMedialink: socialMedialink,
+                      
+                    )),
+          );
         },
       ),
     );
