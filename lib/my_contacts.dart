@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:my_contacts/widgets/contacts_grid.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 // ignore: must_be_immutable
 class MyContacts extends StatelessWidget {
   MyContacts({super.key});
 
   Map<String, String> socialMedia = {
-    "facebook.png": "https://www.facebook.com/hisham.mahfouz.39",
-    'linkedin.png': 'https://www.linkedin.com/feed/',
-    "watsapp.png": "https://wa.me/+96566230370",
+    "facebook": "https://www.facebook.com/hisham.mahfouz.39",
+    'linkedin': 'https://www.linkedin.com/feed/',
+    "watsapp": "https://wa.me/+96566230370",
   };
 
   // List<String> socialMedia = [
@@ -109,4 +108,3 @@ class MyContacts extends StatelessWidget {
     );
   }
 }
-

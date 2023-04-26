@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../start.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class SocialMediaIcon extends StatelessWidget {
@@ -19,17 +18,24 @@ class SocialMediaIcon extends StatelessWidget {
       child: InkWell(
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
-          backgroundImage: AssetImage('assets/$socialMedia'),
+          backgroundImage: AssetImage('assets/$socialMedia.png'),
           radius: 40,
         ),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => StartSocialMedia(socialMedialink: socialMedialink,
-                      
-                    )),
-          );
+          showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.deepOrange),
+                    ),
+                    onPressed: () {
+                      launchUrl(Uri.parse(socialMedialink),
+                          mode: LaunchMode.externalApplication);
+                    },
+                    child: Text('Start $socialMedia'));
+              });
         },
       ),
     );
