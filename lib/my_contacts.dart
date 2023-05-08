@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:my_contacts/my_provider.dart';
+import 'package:my_contacts/widgets/social_media_icon.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tuple/tuple.dart';
 
 // ignore: must_be_immutable
-class MyContacts extends StatefulWidget {
+class MyContacts extends StatelessWidget {
   MyContacts({super.key});
 
-  @override
-  State<MyContacts> createState() => _MyContactsState();
-}
-
-class _MyContactsState extends State<MyContacts> {
-  String? myPlatform;
-  Uri? myUrl;
   Uri phoneNumber = Uri.parse('tel:+96566230370');
+
   Map<String, String> socialMedia = {
     "facebook.png": "https://www.facebook.com/hisham.mahfouz.39",
     // "facebook":Uri.parse("https://www.facebook.com/hisham.mahfouz.39") ,
@@ -34,33 +32,40 @@ class _MyContactsState extends State<MyContacts> {
           },
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              icon: myPlatform == null
-                  ? Icon(
-                      Icons.phone,
-                      size: 25,
-                      // color: Colors.grey,
-                    )
-                  : Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(50),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      elevation: 4,
-                      child: Image(
-                          image: AssetImage(
-                            "assets/$myPlatform",
-                          ),
-                          fit: BoxFit.cover),
-                    ),
-              onPressed: () {
-                // launchUrl(Uri.parse('tel:+96566230370'));
-                myUrl == null
-                    ? launchUrl(phoneNumber)
-                    : launchUrl(myUrl!, mode: LaunchMode.externalApplication);
-              },
-            ),
+          Selector<ActionsIconProvider, Tuple2<String?, Uri?>>(
+            selector: (p0, p1) => Tuple2(p1.getMyPlatform(), p1.getMyUrl()),
+            builder: (context, Object, child) {
+              print("Actions is in build");
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  icon: Object.item1 == null
+                      ? Icon(
+                          Icons.phone,
+                          size: 25,
+                          // color: Colors.grey,
+                        )
+                      : Material(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(50),
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          elevation: 4,
+                          child: Image(
+                              image: AssetImage(
+                                "assets/${Object.item1}",
+                              ),
+                              fit: BoxFit.cover),
+                        ),
+                  onPressed: () {
+                    // launchUrl(Uri.parse('tel:+96566230370'));
+                    Object.item2 == null
+                        ? launchUrl(phoneNumber)
+                        : launchUrl(Object.item2!,
+                            mode: LaunchMode.externalApplication);
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -82,13 +87,34 @@ class _MyContactsState extends State<MyContacts> {
               SizedBox(
                 height: 20,
               ),
-              Text(
-                "Hisham Mahfouz",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              Consumer<ActionsIconProvider>(
+                builder: (context, value, child) {
+                  print("Button is in build");
+                  return ElevatedButton(
+                    onPressed: () {
+                      value.changeName();
+                      value.notifyListeners();
+                    },
+                    child: Text('Change Name'),
+                  );
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Selector<ActionsIconProvider, String>(
+                selector: (p0, p1) => p1.name,
+                builder: (context, value, child) {
+                  print("Name is in build");
+                  return Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: 10,
@@ -128,31 +154,9 @@ class _MyContactsState extends State<MyContacts> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3),
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: InkWell(
-                      
-                      child: CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        backgroundImage: AssetImage(
-                            'assets/${socialMedia.keys.toList()[index]}'),
-                        radius: 40,
-                      ),
-                      onDoubleTap: () {
-                        myPlatform = socialMedia.keys.toList()[index];
-                        myUrl = Uri.parse(socialMedia.values.toList()[index]);
-                        setState(() {});
-                      },
-                      onTap: () {
-                        // print('current value = $myPlatform');
-                        myPlatform = socialMedia.keys.toList()[index];
-                        myUrl = Uri.parse(socialMedia.values.toList()[index]);
-                        // print('current value = $myPlatform');
-                        setState(() {});
-                        launchUrl(Uri.parse(socialMedia.values.toList()[index]),
-                            mode: LaunchMode.externalApplication);
-                      },
-                    ),
+                  return SocialMediaIcon(
+                    socialMedia: socialMedia.keys.toList()[index],
+                    socialMedialink: socialMedia.values.toList()[index],
                   );
                 },
                 shrinkWrap: true,
